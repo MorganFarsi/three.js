@@ -35,6 +35,9 @@
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 			import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
+			import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+			import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+			
 			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 			import Stats from 'three/addons/libs/stats.module.js';
 
@@ -94,13 +97,69 @@
 					metalness: 1
 				} );
 
-				const gui = new GUI();
-				gui.add( material, 'roughness', 0, 1 );
-				gui.add( material, 'metalness', 0, 1 );
-				gui.add( renderer, 'toneMappingExposure', 0, 2 ).name( 'exposure' );
+				// const gui = new GUI();
+				// gui.add( material, 'roughness', 0, 1 );
+				// gui.add( material, 'metalness', 0, 1 );
+				// gui.add( renderer, 'toneMappingExposure', 0, 2 ).name( 'exposure' );
 
-				sphere = new THREE.Mesh( new THREE.IcosahedronGeometry( 15, 8 ), material );
-				scene.add( sphere );
+				// sphere = new THREE.Mesh( new THREE.IcosahedronGeometry( 15, 8 ), material );
+				// scene.add( sphere );
+				let medal1;
+				let medal2;
+				let medal3;
+				const onProgress = function ( xhr ) {
+
+					if ( xhr.lengthComputable ) {
+
+						const percentComplete = xhr.loaded / xhr.total * 100;
+						console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+
+					}
+
+				};
+
+				let materialProp =  {
+					envMap: cubeRenderTarget.texture,
+					roughness: 0.25,
+					metalness: 1,
+					// color: 0x999999
+				};
+
+				new MTLLoader()
+                .setPath( 'models/obj/medal/' )
+                .load( 'Gold_medal.mtl', function ( materials ) {
+
+                    console.table(materials)
+
+                    materials.preload();
+					
+					let material1 = new THREE.MeshStandardMaterial({...materialProp, color: 0x000000}) 
+					const gui = new GUI();
+					gui.add( material1, 'roughness', 0, 1 );
+
+
+
+
+					materials.materials['01___Default'] = material1
+					
+					materials.materials['02___Default'] = new THREE.MeshStandardMaterial({...materialProp, color: 0x000000})
+					materials.materials['03___Default'] = new THREE.MeshStandardMaterial({...materialProp, color: 0x000000})
+					materials.materials['04___Default'] = new THREE.MeshStandardMaterial({...materialProp, color: 0x000000})
+					materials.materials['05___Default'] = new THREE.MeshStandardMaterial({...materialProp, color: 0x000000})
+					materials.materials['06___Default'] = new THREE.MeshStandardMaterial({...materialProp, color: 0x000000})
+
+                    console.table(materials)
+
+                    new OBJLoader()
+                        .setMaterials( materials )
+                        .setPath( 'models/obj/medal/' )
+                        .load( 'Gold_medal.obj', function ( object ) {
+
+                            // object.position.y = - 95;
+                            // scene.add( object );
+							scene.add( object );
+                        }, onProgress );
+                } );
 
 				const material2 = new THREE.MeshStandardMaterial( {
 					roughness: 0.1,
@@ -108,10 +167,10 @@
 				} );
 
 				cube = new THREE.Mesh( new THREE.BoxGeometry( 15, 15, 15 ), material2 );
-				scene.add( cube );
+				// scene.add( cube );
 
 				torus = new THREE.Mesh( new THREE.TorusKnotGeometry( 8, 3, 128, 16 ), material2 );
-				scene.add( torus );
+				// scene.add( torus );
 
 				//
 
